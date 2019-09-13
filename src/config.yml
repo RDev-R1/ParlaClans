@@ -1,0 +1,47 @@
+Season:
+  number: 0
+  started: false
+  timestamp: 0
+
+Clans:
+  ClanA:
+    name: 'כחולים'
+    color: 'BLUE'
+    Material: BLUE_WOOL
+    points: 0
+  ClanB:
+    name: 'אדומים'
+    color: 'RED'
+    Material: RED_WOOL
+    points: 0
+
+BossBar:
+  bossBarMessage: 'זוכה משבוע שעבר הוא %clan%'
+
+MaxPlayersDeference: 15
+
+Points:
+  perKill: 1
+  perHour: 4
+
+KillsPerPlayer: 10
+
+Rewards:
+  WinnerClanCommands:
+    - 'give %player% diamond 1'
+    - 'msg %player% You won!'
+
+Messages:
+  PREFIX: '&8[ParlaClans]&f '
+  GUI_TOP_TEXT: 'תבחר את הקבוצה שלך!'
+  GUI_SURE_TOP_TEXT: 'בטוח שאתה רוצה להצטרף לקבוצה הזו?'
+  GUI_YES: 'כן'
+  GUI_NO: 'לא'
+  ALREADY_IN_A_CLAN: 'אתה כבר בקבוצה, אי אפשר לבחור שוב!'
+  CLAN_FULL: 'הקלאן הזה מלא, בבקשה תבחר קלאן אחר'
+  JOIN_CLAN_MESSAGE: 'הצטרפת לקבוצת %clan%!'
+  NOT_PLAYER_ERROR: 'אתה לא שחקן!'
+  PARLACLANS_FORCE_FINISH: 'מערכת הפרלהקלאנס נסגרה!'
+  PARLACLANS_CLOSED: 'מערכת הפרלהקלאנס סגורה כרגע, לא ניתן להצטרף לעונה זו!'
+
+
