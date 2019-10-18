@@ -5,6 +5,7 @@ import com.rdev.clans.Clan;
 import com.rdev.configuration.Constants;
 import com.rdev.exceptions.ClanFullException;
 import com.rdev.menu.MenuGUI;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,11 +27,6 @@ public class MenusListeners implements Listener {
         if (!(item.hasItemMeta() && item.getItemMeta().hasDisplayName())) return;
 
         Player p = (Player) e.getWhoClicked();
-
-        if (ParlaClans.getInstance().getClansManager().getPlayersClan(p) != null) { //Should not happen!
-            p.closeInventory();
-            return;
-        }
 
         Clan requestedClan = null;
         switch (e.getSlot()) {
@@ -62,21 +58,24 @@ public class MenusListeners implements Listener {
 
         Player p = (Player) e.getWhoClicked();
 
-        if (ParlaClans.getInstance().getClansManager().getPlayersClan(p) != null) { //Should not happen!
-            p.closeInventory();
-            return;
-        }
-
         if (e.getSlot() == 10) {
             p.closeInventory();
             String clanName = e.getInventory().getItem(13).getItemMeta().getDisplayName();
-            Clan selectedClan = ParlaClans.getInstance().getClansManager().getClanByName(Constants.defuseStringColors(clanName));
+            Clan selectedClan = ParlaClans.getInstance().getClansManager().getClanByName(ChatColor.stripColor(clanName));
+
+            Clan oldClan = ParlaClans.getInstance().getClansManager().getPlayersClan(p);
+
             try {
-                ParlaClans.getInstance().getClansManager().addMember(p, selectedClan);
+                if(oldClan == null) {
+                    ParlaClans.getInstance().getClansManager().addMember(p, selectedClan);
+                } else {
+                    ParlaClans.getInstance().getClansManager().movePlayerClan(p, oldClan, selectedClan);
+                }
             } catch (ClanFullException ex) {
                 p.sendMessage(ex.getMessage());
                 return;
             }
+
             p.sendMessage(Constants.Messages.JOIN_CLAN_MESSAGE.replaceAll("%clan%", selectedClan.getClanChatColor() + clanName));
         } else if (e.getSlot() == 16) {
             p.closeInventory();

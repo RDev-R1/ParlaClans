@@ -1,6 +1,7 @@
 package com.rdev;
 
 import com.rdev.clans.BossBarClanWinner;
+import com.rdev.clans.Clan;
 import com.rdev.clans.ClanScoreboardManager;
 import com.rdev.clans.ClansManager;
 import com.rdev.commands.MainCommand;
@@ -9,6 +10,7 @@ import com.rdev.configuration.Constants;
 import com.rdev.listeners.ClansListeners;
 import com.rdev.listeners.MenusListeners;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -25,14 +27,14 @@ public class ParlaClans extends JavaPlugin {
     @Getter public ClansManager clansManager;
     @Getter public ConfigurationManager configurationManager;
     @Getter public ClanScoreboardManager clanScoreboardManager;
-    @Getter public BossBarClanWinner winnerBossBar;
+    @Getter @Setter public BossBarClanWinner winnerBossBar;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        getConfig().options().copyDefaults(true);
         saveConfig();
+        getConfig().options().copyDefaults(true);
 
         this.loadClansManager();
         this.loadConfigurationManager();
@@ -41,11 +43,12 @@ public class ParlaClans extends JavaPlugin {
 
         this.configurationManager.loadClans();
 
-        if(this.clansManager.isStarted()) {
+        if (this.clansManager.isStarted()) {
             this.clanScoreboardManager.setupScoreboard();
-            clansManager.getClans().forEach(clan ->
-                    Bukkit.getOnlinePlayers().forEach(player -> clanScoreboardManager.addPlayer(player, clan))
-            );
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                Clan clan = clansManager.getPlayersClan(player);
+                if (clan != null) clanScoreboardManager.addPlayer(player, clan);
+            });
         }
 
         this.clansManager.timeCheckerSetup();
@@ -66,12 +69,15 @@ public class ParlaClans extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        //Used in order to load config file to avoid config reset
+        reloadConfig();
+
         this.clansManager.getClans().forEach(clan -> {
             getConfig().set("Clans." + clan.getConfigurationID() + ".points", clan.getPoints());
             saveConfig();
         });
 
-        if(winnerBossBar != null) {
+        if (winnerBossBar != null) {
             winnerBossBar.getBossBar().setVisible(false);
         }
     }
@@ -117,7 +123,7 @@ public class ParlaClans extends JavaPlugin {
 
         Constants.PluginSettings.KILL_POINTS = con.getInt("Points.perKill");
         Constants.PluginSettings.HOUR_POINTS = con.getInt("Points.perHour");
-        Constants.PluginSettings.MAX_PLAYERS_DEFERENCE = con.getInt("MaxPlayersDeference");
+        Constants.PluginSettings.MAX_PLAYERS_DIFFERENCE = con.getInt("MaxPlayersDifference");
 
         Constants.PluginSettings.BOSSBAR_MESSAGE = ChatColor.translateAlternateColorCodes('&', con.getString("BossBar.bossBarMessage"));
     }

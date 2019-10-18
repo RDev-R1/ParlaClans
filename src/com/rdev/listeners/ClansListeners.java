@@ -27,21 +27,24 @@ public class ClansListeners implements Listener {
     public void playerKill(PlayerDeathEvent e) {
         Player p = e.getEntity();
 
+
         if (p.getKiller() == null || p.getKiller().getUniqueId().equals(p.getUniqueId())) return;
 
         Map<String, Integer> deaths = ParlaClans.getInstance().getClansManager().getPlayerDeaths();
-
         if (deaths.containsKey(p.getUniqueId().toString())) {
-
-            if (deaths.get(p.getUniqueId().toString()) < Constants.PluginSettings.MAX_PLAYERS_DEFERENCE) {
-                Clan killerClan = ParlaClans.getInstance().getClansManager().getPlayersClan(p.getKiller());
-                killerClan.setPoints(killerClan.getPoints() + Constants.PluginSettings.KILL_POINTS);
-            }
-
             ParlaClans.getInstance().getClansManager().getPlayerDeaths().put(p.getUniqueId().toString(), deaths.get(p.getUniqueId().toString()) + 1);
         }
         else {
             ParlaClans.getInstance().getClansManager().getPlayerDeaths().put(p.getUniqueId().toString(), 1);
+            ParlaClans.getInstance().getClanScoreboardManager().updateScoreboard();
+        }
+
+        if (deaths.get(p.getUniqueId().toString()) < Constants.PluginSettings.MAX_PLAYERS_DIFFERENCE) {
+            Clan killerClan = ParlaClans.getInstance().getClansManager().getPlayersClan(p.getKiller());
+            if (killerClan != null) {
+                killerClan.setPoints(killerClan.getPoints() + Constants.PluginSettings.KILL_POINTS);
+                ParlaClans.getInstance().getClanScoreboardManager().updateScoreboard();
+            }
         }
     }
 
@@ -95,8 +98,8 @@ public class ClansListeners implements Listener {
             bossBarClanWinner.addPlayer(e.getPlayer());
         }
 
-        Clan clan = ParlaClans.getInstance().getClansManager().getPlayersClan(e.getPlayer());
-        if(clan != null) {
+        if(ParlaClans.getInstance().getClansManager().isStarted()) {
+            Clan clan = ParlaClans.getInstance().getClansManager().getPlayersClan(e.getPlayer());
             ParlaClans.getInstance().getClanScoreboardManager().addPlayer(e.getPlayer(), clan);
         }
     }

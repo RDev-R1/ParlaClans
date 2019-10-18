@@ -2,7 +2,6 @@ package com.rdev.configuration;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.StringUtils;
 
 public final class Constants  {
 
@@ -16,7 +15,7 @@ public final class Constants  {
     public static class PluginSettings {
         public static int KILL_POINTS = 1;
         public static int HOUR_POINTS = 4;
-        public static int MAX_PLAYERS_DEFERENCE = 15;
+        public static int MAX_PLAYERS_DIFFERENCE = 15;
         public static String BOSSBAR_MESSAGE = "The last winner is %clan%";
     }
 
@@ -26,7 +25,6 @@ public final class Constants  {
         public static String NOT_PLAYER_ERROR = "You are not a player!";
         public static String PARLACLANS_FORCE_FINISH = "ParlaClans system is now closed!";
         public static String PARLACLANS_CLOSED = "ParlaClans system is now closed!";
-        public static String ALREADY_IN_A_CLAN = "You already in a clan!";
         public static String CLAN_FULL = "This clan is full, please choose another clan!";
     }
 
@@ -35,10 +33,6 @@ public final class Constants  {
         public static String GUI_SURE_TOP_TEXT = "Are you surely want to join this guild?";
         public static String GUI_YES = "Yes";
         public static String GUI_NO = "No";
-    }
-
-    public static String defuseStringColors(String string) {
-        return StringUtils.replacePattern(string, "&.", "");
     }
 
 }

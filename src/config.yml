@@ -18,7 +18,7 @@ Clans:
 BossBar:
   bossBarMessage: 'זוכה משבוע שעבר הוא %clan%'
 
-MaxPlayersDeference: 15
+MaxPlayersDifference: 15
 
 Points:
   perKill: 1
