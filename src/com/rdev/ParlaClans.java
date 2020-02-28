@@ -123,6 +123,7 @@ public class ParlaClans extends JavaPlugin {
 
         Constants.PluginSettings.KILL_POINTS = con.getInt("Points.perKill");
         Constants.PluginSettings.HOUR_POINTS = con.getInt("Points.perHour");
+        Constants.PluginSettings.KILLS_PER_PLAYER = con.getInt("KillsPerPlayer");
         Constants.PluginSettings.MAX_PLAYERS_DIFFERENCE = con.getInt("MaxPlayersDifference");
 
         Constants.PluginSettings.BOSSBAR_MESSAGE = ChatColor.translateAlternateColorCodes('&', con.getString("BossBar.bossBarMessage"));

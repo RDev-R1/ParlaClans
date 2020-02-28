@@ -16,6 +16,7 @@ public final class Constants  {
         public static int KILL_POINTS = 1;
         public static int HOUR_POINTS = 4;
         public static int MAX_PLAYERS_DIFFERENCE = 15;
+        public static int KILLS_PER_PLAYER = 10;
         public static String BOSSBAR_MESSAGE = "The last winner is %clan%";
     }
 

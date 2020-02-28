@@ -27,21 +27,20 @@ public class ClansListeners implements Listener {
     public void playerKill(PlayerDeathEvent e) {
         Player p = e.getEntity();
 
-
         if (p.getKiller() == null || p.getKiller().getUniqueId().equals(p.getUniqueId())) return;
 
         Map<String, Integer> deaths = ParlaClans.getInstance().getClansManager().getPlayerDeaths();
-        if (deaths.containsKey(p.getUniqueId().toString())) {
-            ParlaClans.getInstance().getClansManager().getPlayerDeaths().put(p.getUniqueId().toString(), deaths.get(p.getUniqueId().toString()) + 1);
-        }
-        else {
-            ParlaClans.getInstance().getClansManager().getPlayerDeaths().put(p.getUniqueId().toString(), 1);
-            ParlaClans.getInstance().getClanScoreboardManager().updateScoreboard();
-        }
 
-        if (deaths.get(p.getUniqueId().toString()) < Constants.PluginSettings.MAX_PLAYERS_DIFFERENCE) {
-            Clan killerClan = ParlaClans.getInstance().getClansManager().getPlayersClan(p.getKiller());
-            if (killerClan != null) {
+        Clan killerClan = ParlaClans.getInstance().getClansManager().getPlayersClan(p.getKiller());
+        if (killerClan != null && ParlaClans.getInstance().getClansManager().getPlayersClan(p) != null) {
+
+            if (deaths.containsKey(p.getUniqueId().toString())) {
+                if (deaths.get(p.getUniqueId().toString()) >= Constants.PluginSettings.KILLS_PER_PLAYER) return;
+                killerClan.setPoints(killerClan.getPoints() + Constants.PluginSettings.KILL_POINTS);
+                ParlaClans.getInstance().getClanScoreboardManager().updateScoreboard();
+                ParlaClans.getInstance().getClansManager().getPlayerDeaths().put(p.getUniqueId().toString(), deaths.get(p.getUniqueId().toString()) + 1);
+            } else {
+                ParlaClans.getInstance().getClansManager().getPlayerDeaths().put(p.getUniqueId().toString(), 1);
                 killerClan.setPoints(killerClan.getPoints() + Constants.PluginSettings.KILL_POINTS);
                 ParlaClans.getInstance().getClanScoreboardManager().updateScoreboard();
             }
@@ -51,15 +50,22 @@ public class ClansListeners implements Listener {
     @EventHandler
     public void damageBetweenMembers(EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Player && e.getDamager() instanceof Player)) return;
+        if (!ParlaClans.getInstance().getClansManager().isStarted()) {
+            e.setCancelled(true);
+            return;
+        }
 
         Player damaged = (Player) e.getEntity();
         Player damager = (Player) e.getDamager();
 
         Clan damagerClan = ParlaClans.getInstance().getClansManager().getPlayersClan(damager);
         Clan damagedClan = ParlaClans.getInstance().getClansManager().getPlayersClan(damaged);
-        if(damagerClan == null || damagedClan == null) return;
+        if (damagerClan == null || damagedClan == null) {
+            e.setCancelled(true);
+            return;
+        }
 
-        if(damagedClan.getName().equals(damagerClan.getName())) e.setCancelled(true);
+        if (damagedClan.getName().equals(damagerClan.getName())) e.setCancelled(true);
     }
 
     @EventHandler
@@ -70,16 +76,20 @@ public class ClansListeners implements Listener {
         File[] files = new File(ParlaClans.getInstance().getDataFolder() + "/seasons").listFiles();
         if (files == null) return;
 
-        for(File file : files) {
+        for (File file : files) {
             YamlConfiguration con = YamlConfiguration.loadConfiguration(file);
             List<String> members = con.getStringList("RewardedMembers");
 
-            if(members.size() == 0) continue;
+            if (members.size() == 0) continue;
 
             if (members.contains(p.getUniqueId().toString())) {
-                con.getStringList("Rewards").forEach(command ->
-                        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                                command.replaceAll("%player%", p.getName())));
+                con.getConfigurationSection("Rewards").getKeys(false).forEach(key -> {
+
+                    con.getStringList("Rewards." + key).stream().filter(command -> ((Player) p).hasPermission(key)).forEach(command -> {
+                            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                                    command.replaceAll("%player%", p.getName()));
+                    });
+                });
 
                 members.remove(p.getUniqueId().toString());
                 con.set("RewardedMembers", members);

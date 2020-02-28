@@ -87,7 +87,9 @@ public class ConfigurationManager {
         con.set("Winner.points", winnerClan.getPoints());
         con.set("Winner.timestamp", System.currentTimeMillis());
         con.set("RewardedMembers", winnerClan.getMembers());
-        con.set("Rewards", ParlaClans.getInstance().getConfig().getStringList("Rewards.WinnerClanCommands"));
+        ParlaClans.getInstance().getConfig().getConfigurationSection("Rewards.WinnerClanCommands").getKeys(false).forEach(key -> {
+            con.set("Rewards." + key, ParlaClans.getInstance().getConfig().getStringList("Rewards.WinnerClanCommands." + key));
+        });
 
         ParlaClans.getInstance().getConfig().set("Season.number", season);
 

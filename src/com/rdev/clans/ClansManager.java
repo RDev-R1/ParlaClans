@@ -84,8 +84,6 @@ public class ClansManager {
         } else {
             ParlaClans.getInstance().getWinnerBossBar().getBossBar().setTitle(Constants.PluginSettings.BOSSBAR_MESSAGE.replace("%clan%", winner));
         }
-
-
     }
 
     private void clearClans() {
@@ -163,9 +161,12 @@ public class ClansManager {
 
         Bukkit.getOnlinePlayers().stream().filter(p -> members.contains(p.getUniqueId().toString()))
                 .forEach(p -> {
-                    con.getStringList("Rewards").forEach(command ->
-                            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                                    command.replaceAll("%player%", p.getName())));
+                    con.getConfigurationSection("Rewards").getKeys(false).forEach(key -> {
+
+                        con.getStringList("Rewards." + key).stream().filter(command -> ((Player) p).hasPermission(key)).forEach(command ->
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                                        command.replaceAll("%player%", p.getName())));
+                    });
 
                     members.remove(p.getUniqueId().toString());
                     con.set("RewardedMembers", members);
